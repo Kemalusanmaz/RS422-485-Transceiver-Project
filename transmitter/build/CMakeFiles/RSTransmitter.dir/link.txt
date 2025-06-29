@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/RSTransmitter.dir/home/trick/kemal/RS422_485_Project/configuration/src/configuration.cpp.o CMakeFiles/RSTransmitter.dir/src/transmitter.cpp.o CMakeFiles/RSTransmitter.dir/src/main.cpp.o -o RSTransmitter 

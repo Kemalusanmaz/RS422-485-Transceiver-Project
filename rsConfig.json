@@ -1,0 +1,5 @@
+{
+    "receiverDeviceName": "/dev/ttyUSB0",
+    "transmitterDeviceName": "/dev/ttyUSB1",
+    "baudrate": 9600
+  }
