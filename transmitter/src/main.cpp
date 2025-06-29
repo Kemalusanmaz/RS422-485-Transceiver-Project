@@ -9,7 +9,7 @@ int main() {
   config.initialize(config.getJsonData()["transmitterDeviceName"]);
   config.setRsConfig(config.getJsonData()["baudrate"]);
   RSTransmit transmitter(config.getFd());
-  transmitter.sendData("start");
+  transmitter.sendData("");
   int confOption;
   while (true) {
     std::cout << "---------RS Transmitter---------" << std::endl;

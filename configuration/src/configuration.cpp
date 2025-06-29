@@ -8,24 +8,33 @@
 // Parses JSON config file and loads it into jsonData
 void RSConfiguration::jsonParser() {
   std::string jsonPath = "/home/trick/kemal/RS422_485_Project/rsConfig.json";
-  std::ifstream jsonFile(jsonPath);
+  std::ifstream jsonFile(
+      jsonPath); // Create an input file stream to read the file.
   if (!jsonFile.is_open()) {
     std::cerr << "JSON file could not be opened!"
               << std::endl; // error if the file cannot be opened
   } else {
     std::cout << "JSON file is opened successfuly" << std::endl;
   }
+
+  // Use the nlohmann::json library's stream operator (>>) to parse
+  // the entire file content directly into the jsonData object.
   jsonFile >> jsonData;
 }
 
+// Checks the return value of a function for errors.
 void RSConfiguration::checkError(int ret, const char *msg) {
   if (ret != 0) {
+    // strerror() converts an error number (errno) into a human-readable string
     std::cerr << msg << " Error Code: " << strerror(-ret) << std::endl;
+    // Clean up by closing the file descriptor before exiting.
     close(fd);
     exit(EXIT_FAILURE);
   }
 }
 
+// Converts an integer baud rate value (e.g., 9600) into the corresponding
+// speed_t constant required by the termios library (e.g., B9600).
 speed_t RSConfiguration::getBaudrateConstant(int baudrate) {
   switch (baudrate) {
   case 9600:
@@ -57,121 +66,140 @@ speed_t RSConfiguration::getBaudrateConstant(int baudrate) {
   case 2000000:
     return B2000000;
   default:
-    return B0; // Geçersiz veya desteklenmeyen baud rate
+    return B0; // B0 is a special value, often used to signal an unsupported
+               // baud rate or to hang up.
   }
 }
 
+// Initializes member variables and automatically calls jsonParser() to load the
+// configuration upon object creation.
 RSConfiguration::RSConfiguration() : fd(), jsonData(), tty() { jsonParser(); }
 
+// Initializes the serial port by opening the device file.
 void RSConfiguration::initialize(const std::string &deviceStr) {
+
+  // The open() system call requires a C-style string (const char*).
   const char *device = deviceStr.c_str();
-  fd = open(
-      device,
-      O_RDWR | // open can channel device file with both read and write mode
-          O_NOCTTY | O_SYNC);
+
+  // open() returns a file descriptor (a small integer) for the device.
+  // Flags used:
+  // O_RDWR:   Open for both reading and writing.
+  // O_NOCTTY: The device will not become the process's controlling terminal.
+  //           This is crucial for serial port programming to prevent unwanted
+  //           signals.
+  // O_SYNC:   Writes are synchronized, ensuring they complete before returning.
+  fd = open(device, O_RDWR | O_NOCTTY | O_SYNC);
 
   if (fd < 0) { // if there is an error, return -1
+    // perror() prints the given string, followed by a colon, a space,
+    // and a human-readable message for the current system error code (errno).
     perror("open");
   } else {
     std::cout << "RS Channel File is opened successfully!" << std::endl;
   }
 }
 
+// Configures the serial port attributes using the termios library.
 void RSConfiguration::setRsConfig(int baudrate) {
   auto convertBaudrate = getBaudrateConstant(baudrate);
-  memset(&tty, 0, sizeof tty);
+  memset(&tty, 0, sizeof(tty));
+
+  // tcgetattr() gets the current attributes of the serial port associated
+  // with 'fd' and stores them in the 'tty' struct. These attributes are
+  // acquired to modify the existing settings rather than starting from scratch.
   int ret = tcgetattr(fd, &tty);
   checkError(ret, "Error from tcgetattr");
-  // Baud rate ayarı - 115200
+
+  // Set input and output baud rates.
   cfsetospeed(&tty, convertBaudrate);
   cfsetispeed(&tty, convertBaudrate);
 
-  //   Control Flags (Kontrol Bayrakları) - Donanım seviyesi ayarları (baud
-  //   rate, bit sayısı, parity vb.).
-  //   iki cihaz arasındaki fiziksel elektrik sinyallerinin nasıl
-  //   yorumlanacağını belirler.
+  // --- c_cflag: Control Flags (Hardware-level settings) ---
+  // These flags define the physical properties of the line, like data bits,
+  // parity, etc.
 
-  // CSIZE maskesiyle mevcut karakter boyutu ayarını temizler (&
-  //   ~CSIZE) ve ardından CS8 ile yeniden ayarlar (| CS8). Sonuç: Her bir veri
-  //   paketi 8 bit uzunluğunda olacak.
+  // CSIZE clear the character size mask (& ~CSIZE)
+  // CS8  set the data bits to 8 (| CS8).
+  // Result: Every data package has 8 bit length
   tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
 
-  //  (Parity Enable) bayrağını temizler. Bu, Parity biti kontrolünü devre dışı
-  //  bırakır. Bu en yaygın ayardır ("No Parity"). Parity'i etkinleştirmek için
-  //  tty.c_cflag |= PARENB; yapabilirsiniz. Etkinleştirdikten sonra tek mi çift
-  //  mi olacağını PARODD bayrağı ile belirlersiniz (|= PARODD tek parity, &=
-  //  ~PARODD çift parity).
+  // PARENB NO parity (&= ~PARENB)
+  // PARENB Enable parity checking (|= PARENB)
+  // PARODD odd parity (|= PARODD)
+  // PARODD even parity (&= ~PARODD)
   tty.c_cflag |= PARENB | PARODD;
 
-  //   CSTOPB (2 Stop Bits) bayrağını temizler. Bu, her veri paketinin sonunda
-  //   sadece 1 Stop biti olacağını belirtir. 2 stop biti kullanmak için
-  //   tty.c_cflag |= CSTOPB; yaparsınız.
+  // Defines how many stop bits after every raw data package.
+  // CSTOPB Set to use 2 stop bits (|= CSTOPB)
+  // CSTOPB Set to use 1 stop bits (&= ~CSTOPB)
   tty.c_cflag |= CSTOPB;
 
-  //   CRTSCTS (RTS/CTS Hardware Flow Control) bayrağını temizler. Bu, donanım
-  //   tabanlı akış kontrolünü devre dışı bırakır. Yani, RTS (Request to Send)
-  //   ve CTS (Clear to Send) pinleri kullanılmaz. Donanım akış kontrolünü açmak
-  //   için tty.c_cflag |= CRTSCTS; yaparsınız. Bu, alıcının tamponu dolduğunda
-  //   göndericiye "dur" sinyali göndermesini sağlar.
+  // ıt makes that disable Hardware Flow Control. RTS (Request to Send)
+  // and CTS (Clear to Send) pins cannot be used. when receiver buffer is
+  // fulled,these pins provides to send stop signal to the transmitter.
+  // CRTSCTS Disable hardware flow control (&= ~CRTSCTS)
+  // CRTSCTS Enable hardware flow control (|= CRTSCTS)
   tty.c_cflag &= ~CRTSCTS;
 
-  //   CREAD: Porttan okumayı etkinleştirir. Bu olmadan veri alamazsınız.
-  // CLOCAL: Modem kontrol hatlarını (DCD, DSR, RI gibi) görmezden gel. Bu,
-  // cihazınızın bir modeme değil, doğrudan başka bir cihaza bağlı olduğunu
-  // varsayar. Bu bayrak ayarlanmazsa, port ancak bir "carrier detect" sinyali
-  // aldığında açılır.
-  tty.c_cflag |= CREAD | CLOCAL; // Okuma açık, yerel bağlantı
+  // CREAD: Enable the receiver. A data can not received without this flas is
+  // opened. CLOCAL: Ignore modem control lines ( DCD, DSR, RI, carrier
+  // detect). This flag shows device is coonect another device not a modem. This
+  // ensures the port can be opened without a modem signaling it's ready.
+  tty.c_cflag |= CREAD | CLOCAL;
 
-  //    Local Flags (Yerel Bayraklar) - Yüksek seviyeli, terminal benzeri
-  //    davranışlar (echo, sinyal işleme vb.). elen verinin sürücü tarafından ne
-  //    kadar "işleneceğini" belirler. Siz tümünü devre dışı bırakarak "raw
-  //    mode" elde ediyorsunuz. Bu, veriyi geldiği gibi, hiçbir
-  //    değişikliğe uğramadan almak için en doğru yoldur.
+  // --- c_lflag: Local Flags (Terminal-like behavior) ---
+  // These flags control high-level processing (e.g. echo, signal processing).
+  // It determines that how much received data will be procesed by tge driver.
+  // Disabling them all puts the terminal into "raw mode," which is ideal for
+  // machine-to-machine communication.
 
-  // ICANON: Canonical Mode'u (Kurallı Mod) kapatır. Canonical mod açıkken,
-  // sürücü veriyi satır satır biriktirir ve siz Enter'a (\n) basana kadar
-  // programınıza vermez. Ayrıca Backspace gibi düzenleme karakterlerini de
-  // işler. Kapatarak, veriyi byte byte, geldiği anda almanızı sağlarsınız.
-  // ECHO: Gelen karakterlerin otomatik olarak porta geri gönderilmesini
-  //   (yankılanmasını) engeller.
-  // ECHOE: Silme karakteri geldiğinde imlecin geri gidip karakteri silmesini
-  // engeller.
-  // ISIG: Ctrl-C (SIGINT) veya Ctrl-Z (SIGTSTP) gibi sinyal üreten
-  // karakterlerin işlenmesini engeller.
+  // ICANON: Disable canonical mode. This makes input available byte-by-byte
+  //         instead of line-by-line by driver. the program does not give until
+  //         Enter\n() is pressed. Additionally, It also process editing chars
+  //         such as Backspace.
+  // ECHO: Disable echoing of input characters back to the sender.
+  // ECHOE:  Disable visual erasure of characters on backspace.
+  // ISIG:   Disable signal-generating characters (like Ctrl-C (SIGINT), Ctrl-Z
+  // (SIGTSTP).
   tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-  //    Input Flags (Giriş Bayrakları) - Gelen verinin işlenmesiyle ilgili
-  //    bayraklar.  veri akışı sırasında karakterlerin dönüştürülüp
-  //    dönüştürülmeyeceğini kontrol eder. Yine, "raw mode" için çoğunu kapatmak
-  //    en iyisidir.
 
-  //   Yazılım tabanlı akış kontrolünü (XON/XOFF) devre dışı bırakır. Bu
-  //   sistemde, alıcının tamponu dolduğunda göndericiye özel bir STOP karakteri
-  //   (Ctrl-S) gönderilir, boşaldığında ise START karakteri (Ctrl-Q)
-  //   gönderilir. Bunu kapatmak genellikle daha iyidir.
+  // --- c_iflag: Input Flags (Input data processing) ---
+  //    Flags related to processing of receiving data. Controls whether
+  //    characters are converted during data flow. Again, best to turn most of
+  //    them off for "raw mode"
+
+  // In this system, when the receiver's buffer is full, a special STOP
+  // character (Ctrl-S) is sent to the sender, and when it is empty, a START
+  // character (Ctrl-Q) is sent. XON/XOFF Disable software flow control
+  // (XON/XOFF), which can interfere with binary data.
   tty.c_iflag &= ~(IXON | IXOFF | IXANY);
 
-  //   Output Flags (Çıkış Bayrakları) - Giden verinin işlenmesiyle ilgili
-  //   bayraklar.
+  // --- c_oflag: Output Flags (Output data processing) ---
+  //   Flags related to the processing of transmitting data.
 
-  //   Çıktı işlemesini (Output Processing) devre dışı bırakır. Bu açıkken,
-  //   sürücü \n (newline) karakterini \r\n (carriage return + newline) gibi
-  //   karakter dizilerine çevirebilir. Bunu kapatarak, gönderdiğiniz byte
-  //   dizisinin hiçbir değişikliğe uğramadan gönderilmesini sağlarsınız.
+  //   OPOST  Disable all output processing (OPOST). This prevents conversions
+  //   like mapping newline ('\n') to carriage return + newline ("\r\n").
   tty.c_oflag &= ~OPOST;
 
-  // Zaman aşımı ve minimum karakter sayısı (non-blocking read için)
-  //   Control Characters (Kontrol Karakterleri) - VMIN ve VTIME gibi özel
-  //   kontrol karakterlerinin değerlerini tutan dizi.
-  tty.c_cc[VMIN] =
-      1; // VMIN (Minimum karakter sayısı): read() fonksiyonunun geri dönmesi
-         // için gereken minimum karakter sayısını belirtir.
-  tty.c_cc[VTIME] = 255; // Zaman aşımını desisaniye (0.1 saniye) cinsinden
-                         // belirtir. 255 değeri 25.5 saniye demektir.
+  // --- c_cc: Control Characters (Timeout and blocking settings) ---
+  // VMIN: Minimum number of characters to read before read() returns.
+  // VTIME: Timeout in tenths of a second.
 
+  // This combination (VMIN > 0, VTIME > 0) means:
+  // read() will wait indefinitely for the first character (VMIN=1).
+  // After the first character is received, it will wait up to VTIME tenths of
+  // a second for subsequent characters before returning.
+  tty.c_cc[VMIN] = 1;
+  tty.c_cc[VTIME] = 1; // (means 0.1 second)
+
+  // tcsetattr() applies the new settings to the serial port.
+  // TCSANOW: The change occurs immediately.
   ret = tcsetattr(fd, TCSANOW, &tty);
   checkError(ret, "Error from tcsetattr");
 }
 
+// This function should be called to properly release the serial port resource
+// when it is no longer needed.
 void RSConfiguration::terminate() {
   close(fd);
   std::cout << "RS Channel File is closed successfully!" << std::endl;
