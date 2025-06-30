@@ -1,0 +1,4 @@
+# Exclude Makefiles from language statistics
+Makefile linguist-detectable=false
+# Exclude Build from language statistics
+build/* linguist-generated=true
