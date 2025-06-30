@@ -1,3 +1,0 @@
-/home/trick/kemal/RS422_485_Project/transmitter/build/CMakeFiles/RSTransmitter.dir
-/home/trick/kemal/RS422_485_Project/transmitter/build/CMakeFiles/edit_cache.dir
-/home/trick/kemal/RS422_485_Project/transmitter/build/CMakeFiles/rebuild_cache.dir
