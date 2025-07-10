@@ -14,6 +14,6 @@ void RSTransmit::sendData(std::string data) {
     // Print the transmitted data and its length to the console for
     // confirmation.
     std::cout << "Transmit: " << data << std::endl;
-    std::cout << "Transmit Data Length: " << data.size() << std::endl;
+    std::cout << "Data Length: " << data.size() << std::endl;
   }
 }

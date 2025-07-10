@@ -88,7 +88,7 @@ void RSConfiguration::initialize(const std::string &deviceStr) {
   //           This is crucial for serial port programming to prevent unwanted
   //           signals.
   // O_SYNC:   Writes are synchronized, ensuring they complete before returning.
-  fd = open(device, O_RDWR | O_NOCTTY | O_SYNC);
+  fd = open(device, O_RDWR | O_NOCTTY | O_NONBLOCK | O_SYNC);
 
   if (fd < 0) { // if there is an error, return -1
     // perror() prints the given string, followed by a colon, a space,
@@ -100,8 +100,8 @@ void RSConfiguration::initialize(const std::string &deviceStr) {
 }
 
 // Configures the serial port attributes using the termios library.
-void RSConfiguration::setRsConfig(int baudrate) {
-  auto convertBaudrate = getBaudrateConstant(baudrate);
+void RSConfiguration::setRsConfig(SerialPortSettings settings) {
+  auto convertBaudrate = getBaudrateConstant(settings.getBaudrate());
   memset(&tty, 0, sizeof(tty));
 
   // tcgetattr() gets the current attributes of the serial port associated
@@ -121,18 +121,46 @@ void RSConfiguration::setRsConfig(int baudrate) {
   // CSIZE clear the character size mask (& ~CSIZE)
   // CS8  set the data bits to 8 (| CS8).
   // Result: Every data package has 8 bit length
-  tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
+  tty.c_cflag &= ~CSIZE; // Önce mevcut boyutu temizle
+  switch (settings.getDataBits()) {
+  case 5:
+    tty.c_cflag |= CS5;
+    break;
+  case 6:
+    tty.c_cflag |= CS6;
+    break;
+  case 7:
+    tty.c_cflag |= CS7;
+    break;
+  case 8:
+  default:
+    tty.c_cflag |= CS8;
+    break;
+  }
 
   // PARENB NO parity (&= ~PARENB)
   // PARENB Enable parity checking (|= PARENB)
   // PARODD odd parity (|= PARODD)
   // PARODD even parity (&= ~PARODD)
   tty.c_cflag |= PARENB | PARODD;
+  if (settings.getParity() == "Odd") {
+    tty.c_cflag |= PARENB;
+    tty.c_cflag |= PARODD;
+  } else if (settings.getParity() == "Even") {
+    tty.c_cflag |= PARENB;
+    tty.c_cflag &= ~PARODD;
+  } else {
+    tty.c_cflag &= ~PARENB;
+  }
 
   // Defines how many stop bits after every raw data package.
   // CSTOPB Set to use 2 stop bits (|= CSTOPB)
   // CSTOPB Set to use 1 stop bits (&= ~CSTOPB)
-  tty.c_cflag |= CSTOPB;
+  if (settings.getStopBits() == 2) {
+    tty.c_cflag |= CSTOPB; // 2 stop biti
+  } else {
+    tty.c_cflag &= ~CSTOPB; // 1 stop biti (varsayılan)
+  }
 
   // ıt makes that disable Hardware Flow Control. RTS (Request to Send)
   // and CTS (Clear to Send) pins cannot be used. when receiver buffer is
@@ -195,7 +223,19 @@ void RSConfiguration::setRsConfig(int baudrate) {
   // tcsetattr() applies the new settings to the serial port.
   // TCSANOW: The change occurs immediately.
   ret = tcsetattr(fd, TCSANOW, &tty);
-  checkError(ret, "Error from tcsetattr");
+  if (ret == 0) {
+    std::cout << "RS Channel is set successfully!" << std::endl;
+  } else {
+    checkError(ret, "Error from tcsetattr");
+  }
+}
+
+void RSConfiguration::getRsConfig(SerialPortSettings settings) {
+  std::cout << "RS Channel is get successfully!" << std::endl;
+  std::cout << "Baudrate: " << settings.getBaudrate() << std::endl;
+  std::cout << "Data Bits: " << settings.getDataBits() << std::endl;
+  std::cout << "Stop Bits: " << settings.getStopBits() << std::endl;
+  std::cout << "Parity: " << settings.getParity() << std::endl;
 }
 
 // This function should be called to properly release the serial port resource

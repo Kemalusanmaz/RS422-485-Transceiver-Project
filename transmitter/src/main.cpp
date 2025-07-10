@@ -1,4 +1,5 @@
 #include "../../configuration/include/configuration.hpp"
+#include "../../configuration/include/serialPortSettings.hpp"
 #include "../include/transmitter.hpp"
 #include <iostream>
 #include <string>
@@ -6,8 +7,15 @@
 
 int main() {
   RSConfiguration config;
+  SerialPortSettings settings;
+
+  settings.setBaudrate(config.getJsonData()["baudrate"]);
+  settings.setDataBits(config.getJsonData()["dataBits"]);
+  settings.setParity(config.getJsonData()["parity"]);
+  settings.setStopBits(config.getJsonData()["stopBits"]);
+
   config.initialize(config.getJsonData()["transmitterDeviceName"]);
-  config.setRsConfig(config.getJsonData()["baudrate"]);
+  config.setRsConfig(settings);
   RSTransmit transmitter(config.getFd());
   transmitter.sendData("\b\b");
   int confOption;

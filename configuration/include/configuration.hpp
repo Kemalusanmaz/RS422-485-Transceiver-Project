@@ -5,6 +5,9 @@
 #include <nlohmann/json.hpp>
 #include <termios.h>
 #include <unistd.h>
+#include "serialPortSettings.hpp"
+
+
 
 /**
  * @class RSConfiguration
@@ -41,7 +44,9 @@ public:
    * @note This function sets the port to 8N1 (8 data bits, no parity, 1 stop
    * bit), disables flow control, and configures the port for raw data mode.
    */
-  void setRsConfig(int baudrate);
+  void setRsConfig(SerialPortSettings settings);
+
+  void getRsConfig(SerialPortSettings settings);
 
   /**
    * @brief Closes the serial port file descriptor.

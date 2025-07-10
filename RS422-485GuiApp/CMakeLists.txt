@@ -30,6 +30,7 @@ set(PROJECT_FILES
     # Configuration Dosyaları
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/src/configuration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/include/configuration.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/include/serialPortSettings.hpp
 
     # Receiver Dosyaları
     ${CMAKE_CURRENT_SOURCE_DIR}/../receiver/src/receiver.cpp
@@ -59,5 +60,4 @@ target_link_directories(RS422_485GuiApp PRIVATE
 
 target_link_libraries(RS422_485GuiApp PRIVATE
     Qt6::Widgets
-    pcanfd
 )
