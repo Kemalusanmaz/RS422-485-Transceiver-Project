@@ -4,10 +4,14 @@
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
+#include <filesystem>
+// Initializes member variables and automatically calls jsonParser() to load the
+// configuration upon object creation.
+RSConfiguration::RSConfiguration() { jsonParser(); }
 
 // Parses JSON config file and loads it into jsonData
 void RSConfiguration::jsonParser() {
-  std::string jsonPath = "/home/trick/kemal/RS422_485_Project/rsConfig.json";
+  std::filesystem::path jsonPath = "/home/trick/kemal/RS422_485_Project/rsConfig.json";
   std::ifstream jsonFile(
       jsonPath); // Create an input file stream to read the file.
   if (!jsonFile.is_open()) {
@@ -70,10 +74,6 @@ speed_t RSConfiguration::getBaudrateConstant(int baudrate) {
                // baud rate or to hang up.
   }
 }
-
-// Initializes member variables and automatically calls jsonParser() to load the
-// configuration upon object creation.
-RSConfiguration::RSConfiguration() : fd(), jsonData(), tty() { jsonParser(); }
 
 // Initializes the serial port by opening the device file.
 void RSConfiguration::initialize(const std::string &deviceStr) {

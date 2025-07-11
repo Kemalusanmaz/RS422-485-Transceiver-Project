@@ -61,3 +61,19 @@ target_link_directories(RS422_485GuiApp PRIVATE
 target_link_libraries(RS422_485GuiApp PRIVATE
     Qt6::Widgets
 )
+
+# =================================================================
+# === Konfigurasyon Dosyasını Build Dizinine Kopyala ===
+# =================================================================
+
+# canConfig.json dosyasının proje kökündeki yolunu bul
+set(CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../rsConfig.json)
+
+# Proje derlendikten sonra dosyayı çalıştırılabilir dosyanın yanına kopyala
+add_custom_command(
+    TARGET RS422_485GuiApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CONFIG_FILE}"
+    "$<TARGET_FILE_DIR:RS422_485GuiApp>"
+    COMMENT "Kopyalaniyor: rsConfig.json -> build dizinine"
+)

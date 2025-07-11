@@ -27,7 +27,7 @@
      <string notr="true">background-color: lightgrey;</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -101,7 +101,7 @@
       <property name="geometry">
        <rect>
         <x>1090</x>
-        <y>150</y>
+        <y>140</y>
         <width>201</width>
         <height>26</height>
        </rect>
@@ -114,7 +114,7 @@
       <property name="geometry">
        <rect>
         <x>1090</x>
-        <y>180</y>
+        <y>170</y>
         <width>201</width>
         <height>26</height>
        </rect>
@@ -141,7 +141,7 @@
        <rect>
         <x>0</x>
         <y>10</y>
-        <width>1001</width>
+        <width>1021</width>
         <height>461</height>
        </rect>
       </property>
@@ -164,8 +164,8 @@
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>1047</x>
-        <y>24</y>
+        <x>1117</x>
+        <y>14</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -177,8 +177,8 @@
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
-        <x>1048</x>
-        <y>54</y>
+        <x>1117</x>
+        <y>44</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -190,8 +190,8 @@
      <widget class="QLabel" name="label_23">
       <property name="geometry">
        <rect>
-        <x>1074</x>
-        <y>111</y>
+        <x>1117</x>
+        <y>104</y>
         <width>50</width>
         <height>20</height>
        </rect>
@@ -203,8 +203,8 @@
      <widget class="QLabel" name="label_24">
       <property name="geometry">
        <rect>
-        <x>1050</x>
-        <y>83</y>
+        <x>1117</x>
+        <y>74</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -216,8 +216,8 @@
      <widget class="QComboBox" name="receiver_dataBits">
       <property name="geometry">
        <rect>
-        <x>1120</x>
-        <y>50</y>
+        <x>1194</x>
+        <y>40</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -246,8 +246,8 @@
      <widget class="QComboBox" name="receiver_parity">
       <property name="geometry">
        <rect>
-        <x>1120</x>
-        <y>110</y>
+        <x>1194</x>
+        <y>100</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -271,8 +271,8 @@
      <widget class="QComboBox" name="receiver_stopBits">
       <property name="geometry">
        <rect>
-        <x>1120</x>
-        <y>80</y>
+        <x>1194</x>
+        <y>70</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -291,8 +291,8 @@
      <widget class="QComboBox" name="receiver_baudrate">
       <property name="geometry">
        <rect>
-        <x>1120</x>
-        <y>20</y>
+        <x>1194</x>
+        <y>10</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -440,7 +440,7 @@
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
-        <x>1060</x>
+        <x>1117</x>
         <y>73</y>
         <width>70</width>
         <height>20</height>
@@ -453,7 +453,7 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>1057</x>
+        <x>1117</x>
         <y>14</y>
         <width>70</width>
         <height>20</height>
@@ -466,7 +466,7 @@
      <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
-        <x>1058</x>
+        <x>1117</x>
         <y>44</y>
         <width>70</width>
         <height>20</height>
@@ -505,8 +505,8 @@
      <widget class="QTableWidget" name="transmitter_data">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>30</y>
+        <x>70</x>
+        <y>10</y>
         <width>641</width>
         <height>361</height>
        </rect>
@@ -1082,8 +1082,8 @@
      <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>45</y>
+        <x>10</x>
+        <y>25</y>
         <width>50</width>
         <height>18</height>
        </rect>
@@ -1095,8 +1095,8 @@
      <widget class="QLabel" name="label_14">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>135</y>
+        <x>10</x>
+        <y>115</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1108,8 +1108,8 @@
      <widget class="QLabel" name="label_15">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>90</y>
+        <x>10</x>
+        <y>70</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1121,8 +1121,8 @@
      <widget class="QLabel" name="label_16">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>180</y>
+        <x>10</x>
+        <y>160</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1134,8 +1134,8 @@
      <widget class="QLabel" name="label_17">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>225</y>
+        <x>10</x>
+        <y>205</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1147,8 +1147,8 @@
      <widget class="QLabel" name="label_18">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>270</y>
+        <x>10</x>
+        <y>250</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1160,8 +1160,8 @@
      <widget class="QLabel" name="label_19">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>315</y>
+        <x>10</x>
+        <y>295</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1173,8 +1173,8 @@
      <widget class="QLabel" name="label_20">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>360</y>
+        <x>10</x>
+        <y>340</y>
         <width>61</width>
         <height>18</height>
        </rect>
@@ -1183,25 +1183,25 @@
        <string>Byte 56</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="transmitter_send">
+     <widget class="QPushButton" name="transmitter_sendString">
       <property name="geometry">
        <rect>
-        <x>1110</x>
-        <y>350</y>
+        <x>1170</x>
+        <y>347</y>
         <width>100</width>
         <height>71</height>
        </rect>
       </property>
       <property name="text">
-       <string>Send</string>
+       <string>Send String</string>
       </property>
      </widget>
      <widget class="QPlainTextEdit" name="transmitter_dataDisplay">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>390</y>
-        <width>641</width>
+        <x>70</x>
+        <y>370</y>
+        <width>561</width>
         <height>61</height>
        </rect>
       </property>
@@ -1224,7 +1224,7 @@
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
-        <x>1084</x>
+        <x>1117</x>
         <y>101</y>
         <width>50</width>
         <height>20</height>
@@ -1237,7 +1237,7 @@
      <widget class="QComboBox" name="transmitter_baudrate">
       <property name="geometry">
        <rect>
-        <x>1130</x>
+        <x>1194</x>
         <y>10</y>
         <width>93</width>
         <height>26</height>
@@ -1317,7 +1317,7 @@
      <widget class="QComboBox" name="transmitter_dataBits">
       <property name="geometry">
        <rect>
-        <x>1130</x>
+        <x>1194</x>
         <y>40</y>
         <width>93</width>
         <height>26</height>
@@ -1347,7 +1347,7 @@
      <widget class="QComboBox" name="transmitter_stopBits">
       <property name="geometry">
        <rect>
-        <x>1130</x>
+        <x>1194</x>
         <y>70</y>
         <width>93</width>
         <height>26</height>
@@ -1367,7 +1367,7 @@
      <widget class="QComboBox" name="transmitter_parity">
       <property name="geometry">
        <rect>
-        <x>1130</x>
+        <x>1194</x>
         <y>100</y>
         <width>93</width>
         <height>26</height>
@@ -1389,13 +1389,13 @@
        </property>
       </item>
      </widget>
-     <widget class="QPlainTextEdit" name="transmitter_dataDisplay_2">
+     <widget class="QPlainTextEdit" name="transmitter_stringData">
       <property name="geometry">
        <rect>
         <x>800</x>
-        <y>354</y>
-        <width>291</width>
-        <height>61</height>
+        <y>250</y>
+        <width>361</width>
+        <height>171</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1405,7 +1405,7 @@
        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
       </property>
       <property name="readOnly">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="plainText">
        <string/>
@@ -1414,30 +1414,17 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_9">
+     <widget class="QPushButton" name="transmitter_sendHex">
       <property name="geometry">
        <rect>
-        <x>910</x>
-        <y>330</y>
-        <width>90</width>
-        <height>20</height>
+        <x>630</x>
+        <y>370</y>
+        <width>81</width>
+        <height>61</height>
        </rect>
       </property>
       <property name="text">
-       <string>Send String</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_10">
-      <property name="geometry">
-       <rect>
-        <x>350</x>
-        <y>10</y>
-        <width>140</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Send Hexadecimal</string>
+       <string>Send Hex</string>
       </property>
      </widget>
     </widget>

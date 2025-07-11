@@ -28,6 +28,14 @@ private slots: // Functions that capture events write these blocks as slot funct
     void on_receiver_getDeviceConfiguration_clicked();
     void on_receiver_receiveMessages_clicked();
 
+    void on_transmitter_start_clicked(); // on and clicked is a signal name
+    void on_transmitter_stop_clicked();
+    void on_transmitter_data_cellChanged(int row, int column); // İçerik değiştiğinde veri toplama ve doğrulama için
+    void on_transmitter_sendHex_clicked();
+    void on_transmitter_sendString_clicked();
+    void on_transmitter_setDeviceConfiguration_clicked();
+    void on_transmitter_getDeviceConfiguration_clicked();
+
 private:
     Ui::MainWindow *ui;
     RSConfiguration *m_configReceive;
@@ -40,5 +48,14 @@ private:
     QTimer* m_receiveTimer; // Zamanlayıcı için bir pointer
     QString captureStdOut(const std::function<void()>& func);
     void checkForSerialMessages();
+
+    void setupHexTable(); // Tabloyu ilk kuran fonksiyon
+    void resetHexTable(); // Tabloyu ve veriyi sıfırlayan fonksiyon
+    // O ana kadar birleştirilmiş hex string'ini tutar
+    void updateConcatenatedHex();
+    // Kullanıcının en son hangi hücrede olduğunu takip etmek için
+    int m_lastEditedRow = 0;
+    int m_lastEditedCol = -1; // -1 ile başlatalım ki ilk hücre (0,0) doğru işlensin
+    QString m_concatenatedHex;
 };
 #endif // MAINWINDOW_H
