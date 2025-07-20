@@ -17,9 +17,10 @@ void RSConfiguration::jsonParser() {
   if (!jsonFile.is_open()) {
     std::cerr << "JSON file could not be opened!"
               << std::endl; // error if the file cannot be opened
-  } else {
-    std::cout << "JSON file is opened successfuly" << std::endl;
-  }
+  } 
+  // else {
+  //   std::cout << "JSON file is opened successfuly" << std::endl;
+  // }
 
   // Use the nlohmann::json library's stream operator (>>) to parse
   // the entire file content directly into the jsonData object.
