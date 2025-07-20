@@ -53,9 +53,6 @@ private:
     void resetHexTable(); // Tabloyu ve veriyi sıfırlayan fonksiyon
     // O ana kadar birleştirilmiş hex string'ini tutar
     void updateConcatenatedHex();
-    // Kullanıcının en son hangi hücrede olduğunu takip etmek için
-    int m_lastEditedRow = 0;
-    int m_lastEditedCol = -1; // -1 ile başlatalım ki ilk hücre (0,0) doğru işlensin
     QString m_concatenatedHex;
 };
 #endif // MAINWINDOW_H

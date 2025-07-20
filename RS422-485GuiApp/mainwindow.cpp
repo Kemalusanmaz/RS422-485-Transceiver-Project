@@ -126,27 +126,27 @@ void MainWindow::on_receiver_setDeviceConfiguration_clicked()
 }
 
 void MainWindow::on_receiver_receiveMessages_clicked()
-{    // Butonun Start/Stop işlevi görmesini sağlayalım.
+{
     ui->receiver_receiveMessages->setEnabled(false);
-    // Eğer zamanlayıcı zaten oluşturulmadıysa, oluşturalım.
+    // Create timer
     if (!m_receiveTimer) {
         m_receiveTimer = new QTimer(this);
-        // Zamanlayıcının timeout sinyalini, mesajları kontrol eden slotumuza bağlıyoruz.
+        // connect the timer's timeout signal to the slot that controls messages.
         connect(m_receiveTimer, &QTimer::timeout, this, &MainWindow::checkForSerialMessages);
     }
 
-    // Zamanlayıcı çalışıyor mu?
+    // If timer is working
     if (m_receiveTimer->isActive()) {
-        // --- STOP ---
+        // stop
         m_receiveTimer->stop();
 
-        // Diğer butonları tekrar aktif et
+        // activate buttons
         ui->receiver_setDeviceConfiguration->setEnabled(true);
     } else {
-        // Diğer butonları pasif yap
+        // deactivate buttons
         ui->receiver_setDeviceConfiguration->setEnabled(false);
 
-        // Zamanlayıcıyı her 100 milisaniyede bir çalışacak şekilde başlat.
+        // Start the timer to run every 100 milliseconds.
         m_receiveTimer->start(100);
     }
 }
@@ -255,16 +255,12 @@ void MainWindow::on_transmitter_getDeviceConfiguration_clicked()
 
 void MainWindow::on_transmitter_sendHex_clicked()
 {
-
-    // 1. Gönderilecek verinin boş olup olmadığını kontrol et.
+    // Check if the data to be sent is empty.
     if (m_concatenatedHex.isEmpty()) {
         return;
     }
 
-    // 2. VERİYİ GÖNDERME İŞLEMİ
-    // Burada, m_concatenatedHex string'ini alıp
-    // m_transmitter nesnenizin sendMessage fonksiyonuna gönderirsiniz.
-    // m_concatenatedHex "AA BB CC" formatında olduğu için önce boşlukları temizlemeniz gerekebilir.
+    // data send processing
     m_concatenatedHex = m_concatenatedHex.remove(' ');
     std::string dataToSend = m_concatenatedHex.toStdString();
 
@@ -284,82 +280,76 @@ void MainWindow::on_transmitter_data_cellChanged(int row, int column)
     QTableWidgetItem* currentItem = ui->transmitter_data->item(row, column);
     if (!currentItem) return;
 
-    // Sinyal döngüsünü engellemek için sinyalleri geçici olarak kapat
+    // STemporarily turn off signals to prevent signal looping
     ui->transmitter_data->blockSignals(true);
 
     QString originalText = currentItem->text();
     QString formattedText = originalText.toUpper().trimmed();
 
-    // 1. Kullanıcı hücreyi tamamen sildiyse veya sadece boşluk varsa
+    // If the user deleted the entire cell or there was only space
     if (formattedText.isEmpty()) {
-        // Hücreyi varsayılan "boş" durumuna getir
+        // Set the cell to its default "blank" state
         currentItem->setText("-");
     }
-    // 2. Eğer geçerli bir hex girişi varsa
+    // If there is a valid hex input
     else {
         QRegularExpression hexMatcher("^[0-9A-F]{1,2}$");
         if (hexMatcher.match(formattedText).hasMatch()) {
-            // Eğer tek karakter girildiyse, başına '0' ekle
+            // If only one character is entered, add '0' at the beginning
             if (formattedText.length() == 1) {
                 formattedText = "0" + formattedText;
             }
-            // Hücreye formatlanmış metni geri yaz (büyük harf vb.)
+            // Write back formatted text to the cell (capitalization, etc.)
             currentItem->setText(formattedText);
         }
-        // 3. Eğer giriş geçersizse (ne boş ne de geçerli hex)
+        // If the input is invalid (neither empty nor valid hex)
         else {
-            // Hatalı girişi geri al ve kullanıcıyı uyar
-            // Hatalı giriş öncesi hücrenin durumuna geri dönmek zor olabilir.
-            // En basit çözüm, onu 'boş' durumuna getirmektir.
+            // revert the cell as - char.
             currentItem->setText("-");
         }
     }
-
-    // Her durumda, değişiklikten sonra veri string'ini yeniden oluştur.
+    // Recreate the data string after the change
     updateConcatenatedHex();
 
-    // Sinyalleri tekrar aç
+     // open signals
     ui->transmitter_data->blockSignals(false);
 }
 
 void MainWindow::updateConcatenatedHex()
 {
     m_concatenatedHex.clear();
-    QStringList hexParts; // Geçerli hex değerlerini tutacak bir liste
+    QStringList hexParts; // A list to hold valid hex values
+    bool dataEnded = false; // Flag that marks the end of data
 
-    bool dataEnded = false; // Verinin bittiği yeri işaretleyen bayrak
     for (int row = 0; row < ui->transmitter_data->rowCount(); ++row) {
         for (int col = 0; col < ui->transmitter_data->columnCount(); ++col) {
             QTableWidgetItem* item = ui->transmitter_data->item(row, col);
 
-            // Eğer hücre boş değilse ve metin geçerli bir hex ise
+            // If the cell is not empty and the text is valid hexadecimal
             if (item && item->text() != "-") {
-                // Eğer daha önce veri bitmişse, bu bir "aradaki boşluk" hatasıdır.
+                // If the data ran out before then, it is a "gap" error.
                 if (dataEnded) {
-                    m_concatenatedHex.clear(); // Hatalı olduğu için string'i temizle
+                    m_concatenatedHex.clear(); // Clear string as it is incorrect
                     ui->transmitter_dataDisplay->setPlainText(m_concatenatedHex);
-                    return; // Fonksiyondan çık
+                    return;
                 }
                 hexParts.append(item->text());
             } else {
-                // Hücre boşsa veya "-" içeriyorsa, verinin burada bittiğini varsay.
+               // If the cell is blank or contains "-", assume the data ends there.
                 dataEnded = true;
             }
         }
     }
-
     m_concatenatedHex = hexParts.join(" ");
     ui->transmitter_dataDisplay->setPlainText(m_concatenatedHex);
 }
 
-// Bu fonksiyon tabloyu ilk haline getirir.
+// This function initializes the table.
 void MainWindow::setupHexTable()
 {
     ui->transmitter_data->blockSignals(true);
-    // ... (satır/sütun ayarlama kısmı aynı) ...
     for (int row = 0; row < 8; ++row) {
         for (int col = 0; col < 8; ++col) {
-            // Başlangıçta "-" veya boş bırakmak daha anlamlı
             QTableWidgetItem *item = new QTableWidgetItem("-");
             item->setTextAlignment(Qt::AlignCenter);
             ui->transmitter_data->setItem(row, col, item);
@@ -368,11 +358,12 @@ void MainWindow::setupHexTable()
     ui->transmitter_data->blockSignals(false);
 }
 
+// This function resets both the table and the data variables.
 void MainWindow::resetHexTable()
 {
     m_concatenatedHex.clear();
     ui->transmitter_dataDisplay->clear();
-    setupHexTable(); // Tabloyu ilk haline getirir
+    setupHexTable(); // Initializes the table
 }
 
 void MainWindow::on_transmitter_sendString_clicked()
