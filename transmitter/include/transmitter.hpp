@@ -35,8 +35,12 @@ public:
    */
   void sendData(std::string data);
 
+  int getCycleFlag() const { return m_cycleFlag; }
+  void setCycleFlag(int cycleFlag) { m_cycleFlag = cycleFlag; }
+
 private:
   int m_fd; ///< The file descriptor for the serial port.
+  int m_cycleFlag;
 };
 
 #endif // TRANSMITTER_HPP

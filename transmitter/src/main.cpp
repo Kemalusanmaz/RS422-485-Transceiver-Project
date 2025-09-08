@@ -1,9 +1,11 @@
 #include "../../configuration/include/configuration.hpp"
 #include "../../configuration/include/serialPortSettings.hpp"
 #include "../include/transmitter.hpp"
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <termios.h>
+#include <thread>
 
 int main() {
   RSConfiguration config;
@@ -22,21 +24,30 @@ int main() {
   while (true) {
     std::cout << "---------RS Transmitter---------" << std::endl;
     std::cout << "0- Send Data\n"
-                 "1- Exit\n"
+                 "1- Send Data Cyclically\n"
+                 "2- Exit\n"
               << std::endl;
     std::cout << "Enter a valid number: ";
     std::cin >> confOption;
     std::cout << std::endl;
+    std::string userData;
+    std::cout << "Data: ";
+    std::cin >> userData;
+
     if (confOption == 0) {
+      transmitter.setCycleFlag(false);
       while (true) {
-        std::string userData;
-        std::cout << "Data: ";
-        std::cin >> userData;
         transmitter.sendData(userData);
         continue;
       }
-      continue;
     } else if (confOption == 1) {
+      transmitter.setCycleFlag(true);
+      while (transmitter.getCycleFlag() == 1) {
+        transmitter.sendData(userData);
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+      }
+
+    } else if (confOption == 2) {
       break;
     } else {
       std::cout << "Invalid number. Please Choose Proper Number" << std::endl;

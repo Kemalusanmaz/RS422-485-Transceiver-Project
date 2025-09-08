@@ -27,7 +27,7 @@
      <string notr="true">background-color: lightgrey;</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -1187,7 +1187,7 @@
       <property name="geometry">
        <rect>
         <x>1170</x>
-        <y>347</y>
+        <y>357</y>
         <width>100</width>
         <height>71</height>
        </rect>
@@ -1393,7 +1393,7 @@
       <property name="geometry">
        <rect>
         <x>800</x>
-        <y>250</y>
+        <y>258</y>
         <width>361</width>
         <height>171</height>
        </rect>
@@ -1425,6 +1425,44 @@
       </property>
       <property name="text">
        <string>Send Hex</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="transmitter_sendPeriodically">
+      <property name="geometry">
+       <rect>
+        <x>1140</x>
+        <y>200</y>
+        <width>151</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: white;</string>
+      </property>
+      <property name="text">
+       <string>Send Periodically</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="transmitter_cycleTime">
+      <property name="geometry">
+       <rect>
+        <x>1041</x>
+        <y>198</y>
+        <width>91</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: white;</string>
+      </property>
+      <property name="suffix">
+       <string> ms</string>
+      </property>
+      <property name="maximum">
+       <number>10000</number>
+      </property>
+      <property name="value">
+       <number>100</number>
       </property>
      </widget>
     </widget>

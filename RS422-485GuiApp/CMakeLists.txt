@@ -31,6 +31,12 @@ set(PROJECT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/src/configuration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/include/configuration.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/include/serialPortSettings.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../logger/src/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../logger/include/logger.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/include/messageHandler.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/src/messageHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/include/common.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/src/common.cpp
 
     # Receiver Dosyaları
     ${CMAKE_CURRENT_SOURCE_DIR}/../receiver/src/receiver.cpp
@@ -52,6 +58,9 @@ target_include_directories(RS422_485GuiApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../configuration/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../receiver/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../transmitter/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../logger/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/include/
 )
 
 target_link_directories(RS422_485GuiApp PRIVATE

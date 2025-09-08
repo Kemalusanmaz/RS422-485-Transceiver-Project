@@ -21,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->transmitter_getDeviceConfiguration->setEnabled(false);
     ui->transmitter_setDeviceConfiguration->setEnabled(false);
 
+    m_transmitTimer = new QTimer(this);
+    connect(m_transmitTimer, &QTimer::timeout, this, &MainWindow::on_transmitter_sendPeriodically);
+
     resetHexTable();
 }
 
@@ -198,6 +201,11 @@ void MainWindow::on_transmitter_start_clicked()
 
 void MainWindow::on_transmitter_stop_clicked()
 {
+    if (m_transmitTimer->isActive()) {
+        m_transmitTimer->stop();
+        m_dataToSendPeriodically.clear();
+    }
+
     QString output = captureStdOut([&]() {
         m_configTransmit->terminate();
     });
@@ -253,6 +261,33 @@ void MainWindow::on_transmitter_getDeviceConfiguration_clicked()
     }
 }
 
+void MainWindow::on_transmitter_sendPeriodically()
+{
+    if (!m_transmit || m_dataToSendPeriodically.empty()) {
+        return;
+    }
+
+    QString output = captureStdOut([&]() {
+        m_transmit->sendData(m_dataToSendPeriodically);
+    });
+
+    if (!output.isEmpty()) {
+        ui->transmitter_logDisplay->appendPlainText(output);
+    }
+}
+
+void MainWindow::on_transmitter_sendPeriodically_clicked(bool checked)
+{
+    if (!checked && m_transmitTimer->isActive()){
+        m_transmitTimer->stop();
+        m_dataToSendPeriodically.clear();
+
+        ui->transmitter_sendHex->setEnabled(true);
+        ui->transmitter_sendString->setEnabled(true);
+    }
+
+}
+
 void MainWindow::on_transmitter_sendHex_clicked()
 {
     // Check if the data to be sent is empty.
@@ -264,14 +299,23 @@ void MainWindow::on_transmitter_sendHex_clicked()
     m_concatenatedHex = m_concatenatedHex.remove(' ');
     std::string dataToSend = m_concatenatedHex.toStdString();
 
-    QString output = captureStdOut([&]() {
-        m_transmit->sendData(dataToSend);
-    });
+    if (ui->transmitter_sendPeriodically->isChecked()) {
+        m_dataToSendPeriodically = dataToSend;
 
-    if (!output.isEmpty()) {
-        ui->transmitter_logDisplay->appendPlainText(output);
+        int intervalMs = ui->transmitter_cycleTime->value();
+        m_transmitTimer->start(intervalMs);
+
+        ui->transmitter_sendHex->setEnabled(false);
+        ui->transmitter_sendString->setEnabled(false);
+    }else {
+        QString output = captureStdOut([&]() {
+            m_transmit->sendData(dataToSend);
+        });
+
+        if (!output.isEmpty()) {
+            ui->transmitter_logDisplay->appendPlainText(output);
+        }
     }
-
     resetHexTable();
 }
 
@@ -369,14 +413,23 @@ void MainWindow::resetHexTable()
 void MainWindow::on_transmitter_sendString_clicked()
 {
     std::string stringData = ui->transmitter_stringData->toPlainText().toStdString();
+    if (ui->transmitter_sendPeriodically->isChecked()) {
+        m_dataToSendPeriodically = stringData;
 
-    if(!stringData.empty()){
-        QString output = captureStdOut([&]() {
-            m_transmit->sendData(stringData);
-        });
+        int intervalMs = ui->transmitter_cycleTime->value();
+        m_transmitTimer->start(intervalMs);
 
-        if (!output.isEmpty()) {
-            ui->transmitter_logDisplay->appendPlainText(output);
+        ui->transmitter_sendHex->setEnabled(false);
+        ui->transmitter_sendString->setEnabled(false);
+    }else {
+        if(!stringData.empty()){
+            QString output = captureStdOut([&]() {
+                m_transmit->sendData(stringData);
+            });
+
+            if (!output.isEmpty()) {
+                ui->transmitter_logDisplay->appendPlainText(output);
+            }
         }
     }
     ui->transmitter_stringData->clear();

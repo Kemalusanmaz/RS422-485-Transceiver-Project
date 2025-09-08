@@ -1,12 +1,15 @@
+#include "../include/receiver.hpp"
 #include <iostream>
 #include <string>
 #include <unistd.h> // read
 #include <vector>
-#include "../include/receiver.hpp"
 
-RSReceive::RSReceive(int fd) : m_fd(fd) {}
+RSReceive::RSReceive(int fd) : m_fd(fd) { logger.openFile(); }
+
+RSReceive::~RSReceive() { logger.closeFile(); }
 
 void RSReceive::receiveData(size_t bufferSize) {
+
   // A temporary buffer to hold the data read from the port in a single call.
   // This buffer is created and destroyed each time the function is called.
   std::vector<char> buffer(bufferSize);
@@ -44,7 +47,23 @@ void RSReceive::receiveData(size_t bufferSize) {
   if (!completedMessages.empty()) {
     // If so, iterate through the vector and print each message.
     for (const auto &msg : completedMessages) {
-      std::cout << "Receive: " << msg << std::endl;
+      std::cout << common.getCurrentTime() << ": " << msg << std::endl;
+      if (msg != "") {
+
+        msgHndlr.messageParser(msg);
+        msgHndlr.parseMessageControlByte();
+        std::cout << "Destination Address: " << msgHndlr.getDestinationAddress()
+                  << " Source Address: " << msgHndlr.getSourceAddress()
+                  << " Message Control: " << msgHndlr.getMessageControl()
+                  << " Message Data: " << msgHndlr.getMessageData()
+                  << " Message CRC: " << msgHndlr.getMessageCrc()
+                  << " Poll Bit: " << static_cast<int>(msgHndlr.getPollBit())
+                  << " B Bit: " << static_cast<int>(msgHndlr.getBBit())
+                  << " A Bit: " << static_cast<int>(msgHndlr.getABit())
+                  << " Command Code: "
+                  << static_cast<int>(msgHndlr.getCommandCode()) << std::endl;
+      }
+      logger.logTxt(msg);
     }
   }
 }

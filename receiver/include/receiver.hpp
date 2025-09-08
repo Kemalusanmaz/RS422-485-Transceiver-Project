@@ -1,6 +1,8 @@
 #ifndef RECEIVER_HPP
 #define RECEIVER_HPP
 
+#include "../../logger/include/logger.hpp"
+#include "../../messageHandler/include/messageHandler.hpp"
 #include <cstddef>
 #include <string>
 
@@ -21,6 +23,7 @@ public:
    *           serial port.
    */
   RSReceive(int fd);
+  ~RSReceive();
 
   /**
    * @brief Reads available data from the port into the internal buffer.
@@ -44,6 +47,10 @@ private:
   int m_fd;                     ///< The file descriptor for the serial port.
   std::string m_internalBuffer; ///< Buffer to accumulate incoming data and
                                 ///< handle fragmented messages.
+
+  Logger logger;
+  MessageHandler msgHndlr;
+  Common common;
 };
 
 #endif // RECEIVER_HPP

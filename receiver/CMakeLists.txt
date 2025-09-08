@@ -17,13 +17,13 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g") # add -g (debug symbol) in the c++ compiler)
 find_package(Boost REQUIRED COMPONENTS system)
 
 # the path of header file
-include_directories(include ../configuration/include)
+include_directories(include ../configuration/include ../logger/include ../messageHandler/include ../common/include)
 
 # link_directories(${CMAKE_SOURCE_DIR}/driver/lib)
 
 # definition of source file
 set(SOURCES
-    ../configuration/src/configuration.cpp src/receiver.cpp src/main.cpp )
+    ../configuration/src/configuration.cpp src/receiver.cpp src/main.cpp ../logger/src/logger.cpp ../messageHandler/src/messageHandler.cpp ../common/src/common.cpp)
 
 # define compile target
 add_executable(RSReceiver ${SOURCES})

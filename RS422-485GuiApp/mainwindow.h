@@ -35,6 +35,8 @@ private slots: // Functions that capture events write these blocks as slot funct
     void on_transmitter_sendString_clicked();
     void on_transmitter_setDeviceConfiguration_clicked();
     void on_transmitter_getDeviceConfiguration_clicked();
+    void on_transmitter_sendPeriodically();
+    void on_transmitter_sendPeriodically_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -45,7 +47,9 @@ private:
     SerialPortSettings *m_settingsReceive;
     SerialPortSettings *m_settingsTransmit;
 
-    QTimer* m_receiveTimer; // Zamanlayıcı için bir pointer
+    QTimer *m_receiveTimer; // Zamanlayıcı için bir pointer
+    QTimer *m_transmitTimer;
+    std::string m_dataToSendPeriodically;
     QString captureStdOut(const std::function<void()>& func);
     void checkForSerialMessages();
 

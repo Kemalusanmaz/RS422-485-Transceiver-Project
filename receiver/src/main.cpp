@@ -5,7 +5,6 @@
 int main() {
   RSConfiguration config;
   SerialPortSettings settings;
-
   settings.setBaudrate(config.getJsonData()["baudrate"]);
   settings.setDataBits(config.getJsonData()["dataBits"]);
   settings.setParity(config.getJsonData()["parity"]);
