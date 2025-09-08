@@ -18,3 +18,5 @@ compile_commands.json
 *.a
 *.lib
 *.out
+
+log.txt
