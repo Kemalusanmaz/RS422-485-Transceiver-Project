@@ -67,6 +67,15 @@ target_link_directories(RS422_485GuiApp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../driver/lib
 )
 
+# =================================================================
+# === .desktop dosyasını, derleme dizinine kopyala. ===
+# =================================================================
+file(COPY 
+    RS422_485GuiApp.desktop 
+    app_icon.png 
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+
 target_link_libraries(RS422_485GuiApp PRIVATE
     Qt6::Widgets
 )

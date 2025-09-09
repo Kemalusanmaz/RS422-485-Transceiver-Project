@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=RS422_485 GuiApp
+Comment=A tool for RS422_485 communication
+Exec=RS422_485GuiApp
+Icon=app_icon
+Categories=Utility;Development;

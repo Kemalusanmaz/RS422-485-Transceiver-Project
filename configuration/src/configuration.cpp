@@ -1,23 +1,36 @@
 #include "../include/configuration.hpp"
 #include <fcntl.h>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
-#include <filesystem>
+
+std::filesystem::path RSConfiguration::s_configPath;
+
 // Initializes member variables and automatically calls jsonParser() to load the
 // configuration upon object creation.
 RSConfiguration::RSConfiguration() { jsonParser(); }
 
+void RSConfiguration::init(const char *executablePath) {
+  if (executablePath == nullptr) {
+    return;
+  }
+
+  std::filesystem::path exeDir = std::filesystem::path(executablePath).parent_path();
+
+  s_configPath = exeDir / "rsConfig.json";
+}
+
 // Parses JSON config file and loads it into jsonData
 void RSConfiguration::jsonParser() {
-  std::filesystem::path jsonPath = "/home/trick/kemal/RS422_485_Project/rsConfig.json";
+  
   std::ifstream jsonFile(
-      jsonPath); // Create an input file stream to read the file.
+      s_configPath); // Create an input file stream to read the file.
   if (!jsonFile.is_open()) {
     std::cerr << "JSON file could not be opened!"
               << std::endl; // error if the file cannot be opened
-  } 
+  }
   // else {
   //   std::cout << "JSON file is opened successfuly" << std::endl;
   // }

@@ -28,6 +28,8 @@ public:
    */
   RSConfiguration();
 
+  static void init(const char *executablePath);
+
   /**
    * @brief Initializes and opens the serial port device.
    * @param deviceStr The path to the serial device file (e.g., "/dev/ttyUSB0").
@@ -93,6 +95,7 @@ private:
   int fd{};                ///< File descriptor for the opened serial device.
   nlohmann::json jsonData; // Parsed JSON configuration data.
   struct termios tty;      ///< termios struct to hold serial port settings.
+  static std::filesystem::path s_configPath;
 };
 
 #endif // CONFIGURATION_HPP
