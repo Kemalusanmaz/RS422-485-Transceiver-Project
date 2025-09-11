@@ -16,11 +16,15 @@ public:
   int getStopBits() const { return stopBits; }
   void setStopBits(int stopBits_) { stopBits = stopBits_; }
 
+  std::string getChannel() const { return channel; }
+  void setChannel(const std::string &channel_) { channel = channel_; }
+
 private:
   int baudrate;       //  baudrate
   int dataBits;       //  data bits (5, 6, 7, 8)
   std::string parity; //  parity ("None", "Even", "Odd")
   int stopBits;       // stop bits (1, 2)
+  std::string channel;
 };
 
 #endif // SERIALPORTSETTINGS_HPP

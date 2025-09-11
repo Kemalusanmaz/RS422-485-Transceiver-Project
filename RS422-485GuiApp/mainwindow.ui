@@ -101,7 +101,7 @@
       <property name="geometry">
        <rect>
         <x>1090</x>
-        <y>140</y>
+        <y>190</y>
         <width>201</width>
         <height>26</height>
        </rect>
@@ -114,7 +114,7 @@
       <property name="geometry">
        <rect>
         <x>1090</x>
-        <y>170</y>
+        <y>220</y>
         <width>201</width>
         <height>26</height>
        </rect>
@@ -165,7 +165,7 @@
       <property name="geometry">
        <rect>
         <x>1117</x>
-        <y>14</y>
+        <y>64</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -178,7 +178,7 @@
       <property name="geometry">
        <rect>
         <x>1117</x>
-        <y>44</y>
+        <y>94</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -191,7 +191,7 @@
       <property name="geometry">
        <rect>
         <x>1117</x>
-        <y>104</y>
+        <y>154</y>
         <width>50</width>
         <height>20</height>
        </rect>
@@ -204,7 +204,7 @@
       <property name="geometry">
        <rect>
         <x>1117</x>
-        <y>74</y>
+        <y>124</y>
         <width>70</width>
         <height>20</height>
        </rect>
@@ -217,7 +217,7 @@
       <property name="geometry">
        <rect>
         <x>1194</x>
-        <y>40</y>
+        <y>90</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -247,7 +247,7 @@
       <property name="geometry">
        <rect>
         <x>1194</x>
-        <y>100</y>
+        <y>150</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -272,7 +272,7 @@
       <property name="geometry">
        <rect>
         <x>1194</x>
-        <y>70</y>
+        <y>120</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -292,7 +292,7 @@
       <property name="geometry">
        <rect>
         <x>1194</x>
-        <y>10</y>
+        <y>60</y>
         <width>93</width>
         <height>26</height>
        </rect>
@@ -367,6 +367,49 @@
         <string>2000000</string>
        </property>
       </item>
+     </widget>
+     <widget class="QComboBox" name="receiver_channel">
+      <property name="geometry">
+       <rect>
+        <x>1147</x>
+        <y>30</y>
+        <width>141</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB0</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB3</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>1077</x>
+        <y>34</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Channel</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -1463,6 +1506,49 @@
       </property>
       <property name="value">
        <number>100</number>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="transmitter_channel">
+      <property name="geometry">
+       <rect>
+        <x>810</x>
+        <y>10</y>
+        <width>141</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB0</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>/dev/ttyUSB3</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>14</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Channel</string>
       </property>
      </widget>
     </widget>

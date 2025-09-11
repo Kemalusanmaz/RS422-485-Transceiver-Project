@@ -245,7 +245,8 @@ void RSConfiguration::setRsConfig(SerialPortSettings settings) {
 }
 
 void RSConfiguration::getRsConfig(SerialPortSettings settings) {
-  std::cout << "RS Channel is get successfully!" << std::endl;
+  
+  std::cout << settings.getChannel() <<" Channel is set successfully!" << std::endl;
   std::cout << "Baudrate: " << settings.getBaudrate() << std::endl;
   std::cout << "Data Bits: " << settings.getDataBits() << std::endl;
   std::cout << "Stop Bits: " << settings.getStopBits() << std::endl;
