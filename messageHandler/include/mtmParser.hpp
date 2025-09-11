@@ -28,7 +28,7 @@ public:
 
   std::string getCommandCode() const { return m_commandCode; }
 
-  std::string log();
+  std::string log() override;
 
 private:
   void parseMessageControlByte();
