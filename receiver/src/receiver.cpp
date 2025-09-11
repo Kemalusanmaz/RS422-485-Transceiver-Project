@@ -55,13 +55,13 @@ void RSReceive::receiveData(size_t bufferSize) {
         std::cout << "Destination Address: " << msgHndlr.getDestinationAddress()
                   << " Source Address: " << msgHndlr.getSourceAddress()
                   << " Message Control: " << msgHndlr.getMessageControl()
-                  << " Message Data: " << msgHndlr.getMessageData()
-                  << " Message CRC: " << msgHndlr.getMessageCrc()
+                  << "( "
                   << " Poll Bit: " << static_cast<int>(msgHndlr.getPollBit())
                   << " B Bit: " << static_cast<int>(msgHndlr.getBBit())
                   << " A Bit: " << static_cast<int>(msgHndlr.getABit())
-                  << " Command Code: "
-                  << static_cast<int>(msgHndlr.getCommandCode()) << std::endl;
+                  << " Command Code: " << msgHndlr.getCommandCode() << " )"
+                  << " Message Data: " << msgHndlr.getMessageData()
+                  << " Message CRC: " << msgHndlr.getMessageCrc() << std::endl;
       }
       logger.logTxt(msg);
     }

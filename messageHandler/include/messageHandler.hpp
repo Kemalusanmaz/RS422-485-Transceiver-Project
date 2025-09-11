@@ -2,6 +2,8 @@
 #define MESSAGEHANDLER_HPP
 
 #include <string>
+#include <bitset>
+
 class MessageHandler {
 public:
   void messageParser(const std::string &rawHex);
@@ -24,7 +26,7 @@ public:
 
   uint8_t getABit() const { return m_aBit; }
 
-  uint8_t getCommandCode() const { return m_commandCode; }
+  std::string getCommandCode() const { return m_commandCode; }
 
 private:
   std::string m_destinationAddress; // identifies the receiver of the message 1
@@ -38,7 +40,7 @@ private:
   uint8_t m_pollBit;
   uint8_t m_bBit;
   uint8_t m_aBit;
-  uint8_t m_commandCode;
+  std::string m_commandCode;
 };
 
 #endif
