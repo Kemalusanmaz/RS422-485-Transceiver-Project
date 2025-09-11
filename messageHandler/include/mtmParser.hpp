@@ -28,6 +28,8 @@ public:
 
   std::string getCommandCode() const { return m_commandCode; }
 
+  std::string log();
+
 private:
   void parseMessageControlByte();
 

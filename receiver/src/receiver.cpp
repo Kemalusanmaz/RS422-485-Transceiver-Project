@@ -51,10 +51,12 @@ void RSReceive::receiveData(size_t bufferSize) {
       if (!msg.empty()) {
         IMessageParser *parsedResult = msgHndlr.processMessage(msg);
         if (parsedResult) {
+          logger.logTxt(msg, parsedResult);
           delete parsedResult;
           parsedResult = nullptr;
+        } else {
+          logger.logTxt(msg);
         }
-        logger.logTxt(msg);
       }
     }
   }

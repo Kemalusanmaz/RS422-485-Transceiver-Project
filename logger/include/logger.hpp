@@ -2,6 +2,7 @@
 #define LOGGER_HPP
 
 #include "../../common/include/common.hpp"
+#include "../../messageHandler/include/iMessageParser.hpp"
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -11,7 +12,8 @@ public:
   // Logger();
   static void init(const char *executablePath);
   void openFile();
-  void logTxt(std::string receiveData);
+  void logTxt(const std::string &receiveData);
+  void logTxt(const std::string &receiveData, IMessageParser *parsedResult);
   void closeFile();
 
 private:

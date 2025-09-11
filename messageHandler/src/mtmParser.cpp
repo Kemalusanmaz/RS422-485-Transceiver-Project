@@ -2,6 +2,7 @@
 #include <bitset>
 #include <cstddef>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 void MtmParser::messageParser(const std::string &rawHex) {
@@ -37,7 +38,7 @@ void MtmParser::parseMessageControlByte() {
 }
 
 void MtmParser::display() {
-  std::cout << " ---- Magnetometer TeleResponse ----\n "
+  std::cout << " ---- Magnetometer TeleResponse ----\n"
             << "Destination Address: " << m_destinationAddress
             << "\nSource Address: " << m_sourceAddress
             << "\nMessage Control: " << m_messageControl << " ("
@@ -47,4 +48,21 @@ void MtmParser::display() {
             << " Command Code: " << m_commandCode << ") "
             << "\nMessage Data: " << m_messageData
             << "\nMessage CRC: " << m_messageCrc << std::endl;
+}
+
+std::string MtmParser::log() {
+  std::stringstream ss;
+
+  ss << " ---- Magnetometer TeleResponse ----\n"
+     << "Destination Address: " << m_destinationAddress
+     << "\nSource Address: " << m_sourceAddress
+     << "\nMessage Control: " << m_messageControl << " ("
+     << "Poll Bit: " << static_cast<int>(m_pollBit)
+     << " B Bit: " << static_cast<int>(m_bBit)
+     << " A Bit: " << static_cast<int>(m_aBit)
+     << " Command Code: " << m_commandCode << ") "
+     << "\nMessage Data: " << m_messageData << "\nMessage CRC: " << m_messageCrc
+     << std::endl;
+
+     return ss.str();
 }

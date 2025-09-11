@@ -18,17 +18,29 @@ void Logger::openFile() {
   m_file.open(logFilePath, std::ios::out | std::ios::binary | std::ios::app);
 
   if (!m_file.is_open()) {
-    std::cout<<"file can not be open!!!"<<std::endl;
+    std::cout << "file can not be open!!!" << std::endl;
   }
 }
 
-void Logger::logTxt(std::string receiveData) {
+void Logger::logTxt(const std::string &receiveData) {
 
   if (!m_file.is_open()) {
     std::cout << "File cannot be open!!" << std::endl;
   } else {
     auto currentTime = common.getCurrentTime();
     m_file << currentTime << ": " << receiveData << std::endl;
+    m_file.flush();
+  }
+}
+
+void Logger::logTxt(const std::string &receiveData,
+                    IMessageParser *parsedResult) {
+  if (!m_file.is_open()) {
+    std::cout << "File cannot be open!!" << std::endl;
+  } else {
+    auto currentTime = common.getCurrentTime();
+    auto parsedResultStr = parsedResult->log();
+    m_file << currentTime << ": " << receiveData << std::endl << parsedResultStr << std::endl;
     m_file.flush();
   }
 }
