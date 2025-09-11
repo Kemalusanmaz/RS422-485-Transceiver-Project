@@ -48,22 +48,14 @@ void RSReceive::receiveData(size_t bufferSize) {
     // If so, iterate through the vector and print each message.
     for (const auto &msg : completedMessages) {
       std::cout << common.getCurrentTime() << ": " << msg << std::endl;
-      if (msg != "") {
-
-        msgHndlr.messageParser(msg);
-        msgHndlr.parseMessageControlByte();
-        std::cout << "Destination Address: " << msgHndlr.getDestinationAddress()
-                  << " Source Address: " << msgHndlr.getSourceAddress()
-                  << " Message Control: " << msgHndlr.getMessageControl()
-                  << "( "
-                  << " Poll Bit: " << static_cast<int>(msgHndlr.getPollBit())
-                  << " B Bit: " << static_cast<int>(msgHndlr.getBBit())
-                  << " A Bit: " << static_cast<int>(msgHndlr.getABit())
-                  << " Command Code: " << msgHndlr.getCommandCode() << " )"
-                  << " Message Data: " << msgHndlr.getMessageData()
-                  << " Message CRC: " << msgHndlr.getMessageCrc() << std::endl;
+      if (!msg.empty()) {
+        IMessageParser *parsedResult = msgHndlr.processMessage(msg);
+        if (parsedResult) {
+          delete parsedResult;
+          parsedResult = nullptr;
+        }
+        logger.logTxt(msg);
       }
-      logger.logTxt(msg);
     }
   }
 }

@@ -35,8 +35,12 @@ set(PROJECT_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/../logger/include/logger.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/include/messageHandler.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/src/messageHandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/include/mtmParser.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/src/mtmParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../messageHandler/include/iMessageParser.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/include/common.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/src/common.cpp
+
 
     # Receiver Dosyaları
     ${CMAKE_CURRENT_SOURCE_DIR}/../receiver/src/receiver.cpp
