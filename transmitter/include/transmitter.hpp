@@ -1,6 +1,7 @@
 #ifndef TRANSMITTER_HPP
 #define TRANSMITTER_HPP
 #include <string>
+#include <vector>
 
 /**
  * @class RSTransmit
@@ -34,6 +35,7 @@ public:
    *       end.
    */
   void sendData(std::string data);
+  void sendDataHex(const std::vector<uint8_t>& data);
 
   int getCycleFlag() const { return m_cycleFlag; }
   void setCycleFlag(int cycleFlag) { m_cycleFlag = cycleFlag; }

@@ -161,10 +161,32 @@ void MainWindow::on_receiver_receiveMessages_clicked() {
 void MainWindow::checkForSerialMessages() {
   if (!m_receive)
     return;
-  QString output = captureStdOut([&]() { m_receive->receiveData(1024); });
+  QString output;
+  if (ui->receiver_readMode->currentText().toStdString() == "ASCII") {
+    output = captureStdOut([&]() { m_receive->receiveData(1024); });
+    if (!output.isEmpty()) {
+      ui->receiver_receiveMessagesDisplay->appendPlainText(output);
+    }
+  } else if (ui->receiver_readMode->currentText().toStdString() == "HEX") {
 
-  if (!output.isEmpty()) {
-    ui->receiver_receiveMessagesDisplay->appendPlainText(output);
+     // Ham veriyi okusun ve dahili buffer'a koysun
+      output = captureStdOut([&]() {     m_receive->receiveDataHex(
+                                        1024); });
+      if (!output.isEmpty()) {
+          ui->receiver_receiveMessagesDisplay->appendPlainText(output);
+      }
+    // Şimdi m_receive'ın internalHexBuffer'ını alıp ekranda hex olarak
+    // gösterelim
+    const std::vector<uint8_t> &hexBuffer = m_receive->getReceivedHexBuffer();
+    if (!hexBuffer.empty()) {
+      QString hexString;
+      for (uint8_t byte : hexBuffer) {
+        hexString += QString("%1 ").arg((int)byte, 2, 16, QChar('0')).toUpper();
+        //ui->receiver_receiveMessagesDisplay->appendPlainText(hexString);
+      }
+    }
+     return; // Hex okumasında captureStdOut doğrudan string çıktısı
+    // vermeyecektir.
   }
 }
 
@@ -202,7 +224,9 @@ void MainWindow::on_transmitter_start_clicked() {
 void MainWindow::on_transmitter_stop_clicked() {
   if (m_transmitTimer->isActive()) {
     m_transmitTimer->stop();
-    m_dataToSendPeriodically.clear();
+    // m_dataToSendPeriodically.clear();
+    m_hexDataToSendPeriodically.clear();    // Hex verisini temizle
+    m_stringDataToSendPeriodically.clear(); // String verisini temizle
   }
 
   QString output = captureStdOut([&]() { m_configTransmit->terminate(); });
@@ -252,10 +276,10 @@ void MainWindow::on_transmitter_setDeviceConfiguration_clicked() {
     ui->transmitter_logDisplay->appendPlainText(output);
   }
 
-  ui->receiver_baudrate->setEnabled(false);
-  ui->receiver_dataBits->setEnabled(false);
-  ui->receiver_parity->setEnabled(false);
-  ui->receiver_stopBits->setEnabled(false);
+  ui->transmitter_baudrate->setEnabled(false);
+  ui->transmitter_dataBits->setEnabled(false);
+  ui->transmitter_parity->setEnabled(false);
+  ui->transmitter_stopBits->setEnabled(false);
 }
 
 void MainWindow::on_transmitter_getDeviceConfiguration_clicked() {
@@ -266,14 +290,35 @@ void MainWindow::on_transmitter_getDeviceConfiguration_clicked() {
     ui->transmitter_logDisplay->appendPlainText(output);
   }
 }
-
+//||
 void MainWindow::on_transmitter_sendPeriodically() {
-  if (!m_transmit || m_dataToSendPeriodically.empty()) {
-    return;
+  if (!m_transmit ) {
+        if (m_currentSendType == SEND_STRING) {
+          if(!m_stringDataToSendPeriodically.empty()){
+                return;
+          }
+        }else if(m_currentSendType == SEND_HEX){
+            if(!m_hexDataToSendPeriodically.empty()){
+                return;
+            }
+        }
   }
 
-  QString output =
-      captureStdOut([&]() { m_transmit->sendData(m_dataToSendPeriodically); });
+  // QString output =
+  //   captureStdOut([&]() { m_transmit->sendData(m_dataToSendPeriodically); });
+
+  QString output;
+  if (m_currentSendType == SEND_HEX) {
+    if (m_hexDataToSendPeriodically.empty())
+      return;
+    output = captureStdOut(
+        [&]() { m_transmit->sendDataHex(m_hexDataToSendPeriodically); });
+  } else if (m_currentSendType == SEND_STRING) {
+    if (m_stringDataToSendPeriodically.empty())
+      return;
+    output = captureStdOut(
+        [&]() { m_transmit->sendData(m_stringDataToSendPeriodically); });
+  }
 
   if (!output.isEmpty()) {
     ui->transmitter_logDisplay->appendPlainText(output);
@@ -283,8 +328,8 @@ void MainWindow::on_transmitter_sendPeriodically() {
 void MainWindow::on_transmitter_sendPeriodically_clicked(bool checked) {
   if (!checked && m_transmitTimer->isActive()) {
     m_transmitTimer->stop();
-    m_dataToSendPeriodically.clear();
-
+    m_stringDataToSendPeriodically.clear();
+    m_hexDataToSendPeriodically.clear();
     ui->transmitter_sendHex->setEnabled(true);
     ui->transmitter_sendString->setEnabled(true);
   }
@@ -292,16 +337,17 @@ void MainWindow::on_transmitter_sendPeriodically_clicked(bool checked) {
 
 void MainWindow::on_transmitter_sendHex_clicked() {
   // Check if the data to be sent is empty.
-  if (m_concatenatedHex.isEmpty()) {
+  if (m_currentHexData.empty()) {
     return;
   }
 
   // data send processing
-  m_concatenatedHex = m_concatenatedHex.remove(' ');
-  std::string dataToSend = m_concatenatedHex.toStdString();
+  // m_concatenatedHex = m_concatenatedHex.remove(' ');
+  // std::string dataToSend = m_concatenatedHex.toStdString();
 
   if (ui->transmitter_sendPeriodically->isChecked()) {
-    m_dataToSendPeriodically = dataToSend;
+    m_hexDataToSendPeriodically = m_currentHexData;
+    m_currentSendType = SEND_HEX; // Hex gönderileceğini belirt
 
     int intervalMs = ui->transmitter_cycleTime->value();
     m_transmitTimer->start(intervalMs);
@@ -309,7 +355,8 @@ void MainWindow::on_transmitter_sendHex_clicked() {
     ui->transmitter_sendHex->setEnabled(false);
     ui->transmitter_sendString->setEnabled(false);
   } else {
-    QString output = captureStdOut([&]() { m_transmit->sendData(dataToSend); });
+    QString output =
+        captureStdOut([&]() { m_transmit->sendDataHex(m_currentHexData); });
 
     if (!output.isEmpty()) {
       ui->transmitter_logDisplay->appendPlainText(output);
@@ -359,7 +406,7 @@ void MainWindow::on_transmitter_data_cellChanged(int row, int column) {
 }
 
 void MainWindow::updateConcatenatedHex() {
-  m_concatenatedHex.clear();
+  m_currentHexData.clear();
   QStringList hexParts;   // A list to hold valid hex values
   bool dataEnded = false; // Flag that marks the end of data
 
@@ -371,19 +418,34 @@ void MainWindow::updateConcatenatedHex() {
       if (item && item->text() != "-") {
         // If the data ran out before then, it is a "gap" error.
         if (dataEnded) {
-          m_concatenatedHex.clear(); // Clear string as it is incorrect
-          ui->transmitter_dataDisplay->setPlainText(m_concatenatedHex);
+          m_currentHexData.clear(); // Clear string as it is incorrect
+          hexParts.clear();
+          ui->transmitter_dataDisplay->setPlainText("");
           return;
         }
         hexParts.append(item->text());
+        bool ok;
+        unsigned int val = item->text().toUInt(&ok, 16);
+        if (ok && val <= 0xFF) { // 0xFF (255) değeri, bir uint8_t'nin
+                                 // alabileceği maksimum değerdir.
+          m_currentHexData.push_back(
+              static_cast<uint8_t>(val)); // uint8_t'ye cast et
+          hexParts.append(item->text());  // Ekran için string listesine ekle
+        } else {
+          // Eğer dönüşümde hata olursa (geçersiz hex)
+          m_currentHexData.clear();
+          hexParts.clear();
+          ui->transmitter_dataDisplay->setPlainText("Invalid Hex Input!");
+          return;
+        }
       } else {
         // If the cell is blank or contains "-", assume the data ends there.
         dataEnded = true;
       }
     }
   }
-  m_concatenatedHex = hexParts.join(" ");
-  ui->transmitter_dataDisplay->setPlainText(m_concatenatedHex);
+  // m_concatenatedHex = hexParts.join(" ");
+  ui->transmitter_dataDisplay->setPlainText("");
 }
 
 // This function initializes the table.
@@ -401,7 +463,8 @@ void MainWindow::setupHexTable() {
 
 // This function resets both the table and the data variables.
 void MainWindow::resetHexTable() {
-  m_concatenatedHex.clear();
+  // m_concatenatedHex.clear();
+  m_currentHexData.clear(); // m_currentHexData vektörünü temizle
   ui->transmitter_dataDisplay->clear();
   setupHexTable(); // Initializes the table
 }
@@ -410,8 +473,8 @@ void MainWindow::on_transmitter_sendString_clicked() {
   std::string stringData =
       ui->transmitter_stringData->toPlainText().toStdString();
   if (ui->transmitter_sendPeriodically->isChecked()) {
-    m_dataToSendPeriodically = stringData;
-
+    m_stringDataToSendPeriodically = stringData;
+    m_currentSendType = SEND_STRING; // String gönderileceğini belirt
     int intervalMs = ui->transmitter_cycleTime->value();
     m_transmitTimer->start(intervalMs);
 

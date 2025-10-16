@@ -5,6 +5,7 @@
 #include "../../messageHandler/include/messageHandler.hpp"
 #include <cstddef>
 #include <string>
+#include <vector>
 
 /**
  * @class RSReceive
@@ -43,11 +44,16 @@ public:
    */
   void receiveData(size_t bufferSize);
 
+  void receiveDataHex(size_t bufferSize);
+
+  // Opsiyonel: Dışarıdan okunmuş hex veriyi almak için
+    const std::vector<uint8_t>& getReceivedHexBuffer() const { return m_internalHexBuffer; }
+
 private:
   int m_fd;                     ///< The file descriptor for the serial port.
   std::string m_internalBuffer; ///< Buffer to accumulate incoming data and
                                 ///< handle fragmented messages.
-
+  std::vector<uint8_t> m_internalHexBuffer;
   Logger logger;
   MessageHandler msgHndlr;
   Common common;

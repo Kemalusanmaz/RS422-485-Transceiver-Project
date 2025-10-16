@@ -1,6 +1,10 @@
 #include "../include/receiver.hpp"
+#include <algorithm> // std::find için
+#include <iomanip>   // Hex yazdırmak için
+#include <ios>
 #include <iostream>
 #include <string>
+#include <termios.h>
 #include <unistd.h> // read
 #include <vector>
 
@@ -59,5 +63,27 @@ void RSReceive::receiveData(size_t bufferSize) {
         }
       }
     }
+  }
+}
+
+// YENİ: Hex/Binary tabanlı receiveDataHex fonksiyonu
+void RSReceive::receiveDataHex(size_t bufferSize) {
+  std::vector<uint8_t> tempBuffer(
+      bufferSize); // Okunan veriyi geçici olarak tutacak buffer
+
+  ssize_t bytesRead = read(m_fd, reinterpret_cast<char *>(tempBuffer.data()),
+                           tempBuffer.size());
+
+  if (bytesRead > 0) {
+    // Okunan tüm baytları ana ikili buffer'a ekle.
+    m_internalHexBuffer.insert(m_internalHexBuffer.end(), tempBuffer.begin(),
+                               tempBuffer.begin() + bytesRead);
+
+    std::cout << common.getCurrentTime() << ":";
+    for (size_t i = 0; i < bytesRead; ++i) {
+      std::cout << std::hex << std::setw(2) << std::setfill('0')
+                << std::uppercase << (int)tempBuffer[i] << " ";
+    }
+    tcflush(m_fd, TCIFLUSH);
   }
 }
