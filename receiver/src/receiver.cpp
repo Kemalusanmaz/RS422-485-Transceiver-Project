@@ -1,6 +1,7 @@
 #include "../include/receiver.hpp"
 #include <algorithm> // std::find için
-#include <iomanip>   // Hex yazdırmak için
+#include <cstdint>
+#include <iomanip> // Hex yazdırmak için
 #include <ios>
 #include <iostream>
 #include <string>
@@ -53,37 +54,44 @@ void RSReceive::receiveData(size_t bufferSize) {
     for (const auto &msg : completedMessages) {
       std::cout << common.getCurrentTime() << ": " << msg << std::endl;
       if (!msg.empty()) {
-        IMessageParser *parsedResult = msgHndlr.processMessage(msg);
-        if (parsedResult) {
-          logger.logTxt(msg, parsedResult);
-          delete parsedResult;
-          parsedResult = nullptr;
-        } else {
-          logger.logTxt(msg);
-        }
+        logger.logTxt(msg);
       }
     }
   }
 }
 
-// YENİ: Hex/Binary tabanlı receiveDataHex fonksiyonu
 void RSReceive::receiveDataHex(size_t bufferSize) {
-  std::vector<uint8_t> tempBuffer(
-      bufferSize); // Okunan veriyi geçici olarak tutacak buffer
+  // A temporary buffer to hold the data read from the port in a single call.
+  // This buffer is created and destroyed each time the function is called.
+  std::vector<uint8_t> tempBuffer(bufferSize);
 
+  // The read() system call attempts to read data from a file descriptor.
+  // 1st arg (m_fd): The file descriptor for the serial port.
+  // 2nd arg (reinterpret_cast<char *>(tempBuffer.data()): A pointer to the
+  // memory where read data will be stored. 3rd arg (tempBuffer.size()): The
+  // maximum number of bytes to read.
   ssize_t bytesRead = read(m_fd, reinterpret_cast<char *>(tempBuffer.data()),
                            tempBuffer.size());
 
-  if (bytesRead > 0) {
-    // Okunan tüm baytları ana ikili buffer'a ekle.
+  if (bytesRead > 0) { // Proceed only if data was actually read from the port.
+
     m_internalHexBuffer.insert(m_internalHexBuffer.end(), tempBuffer.begin(),
                                tempBuffer.begin() + bytesRead);
-
     std::cout << common.getCurrentTime() << ":";
+    std::stringstream stream;
     for (size_t i = 0; i < bytesRead; ++i) {
       std::cout << std::hex << std::setw(2) << std::setfill('0')
                 << std::uppercase << (int)tempBuffer[i] << " ";
+      stream << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
+             << (int)tempBuffer[i] << " ";
     }
+    logger.logTxt(stream.str());
+
+    std::string tempString = stream.str();
+    tempString.erase(
+        std::remove(tempString.begin(), tempString.end(), ' '),
+        tempString.end());
+    IMessageParser *parsedResult = msgHndlr.processMessage(tempString);
     tcflush(m_fd, TCIFLUSH);
   }
 }
