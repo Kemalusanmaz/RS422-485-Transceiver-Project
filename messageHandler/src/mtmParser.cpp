@@ -10,12 +10,15 @@ void MtmParser::messageParser(const std::string &rawHex) {
     return;
   }
 
-  m_destinationAddress = rawHex.substr(0, 2);
-  m_sourceAddress = rawHex.substr(2, 2);
-  m_messageControl = rawHex.substr(4, 2);
-  m_messageCrc = rawHex.substr(rawHex.length() - 4, 4);
+  m_startSlip = rawHex.substr(0, 2);
+  m_destinationAddress = rawHex.substr(2, 2);
+  m_sourceAddress = rawHex.substr(4, 2);
+  m_messageControl = rawHex.substr(6, 2);
+  m_messageCrc = rawHex.substr(rawHex.length() - 6, 4);
+  m_stopSlip = rawHex.substr(rawHex.length() - 2, 2);
 
   size_t dataLength = rawHex.length() - 10;
+
   if (dataLength > 0) {
     m_messageData = rawHex.substr(6, dataLength);
   } else {
@@ -64,5 +67,5 @@ std::string MtmParser::log() {
      << "\nMessage Data: " << m_messageData << "\nMessage CRC: " << m_messageCrc
      << std::endl;
 
-     return ss.str();
+  return ss.str();
 }

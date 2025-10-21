@@ -30,9 +30,14 @@ public:
 
   std::string log() override;
 
+  std::string getStartSlip() const { return m_startSlip; }
+
+  std::string getStopSlip() const { return m_stopSlip; }
+
 private:
   void parseMessageControlByte();
-
+  std::string m_startSlip;
+  std::string m_stopSlip;
   std::string m_destinationAddress; // identifies the receiver of the message 1
                                     // (0x01)...127 (0x7f)
   std::string m_sourceAddress;      // identifies the initiator of the message 1
